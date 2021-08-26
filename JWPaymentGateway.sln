@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F2360C8F-503E-4BFC-91DD-E9C6E1B27C7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JWPaymentGateway.Web", "src\JWPaymentGateway.Web\JWPaymentGateway.Web.csproj", "{8E80F340-5525-471B-A415-2A8BA4CC5CA3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E80F340-5525-471B-A415-2A8BA4CC5CA3} = {F2360C8F-503E-4BFC-91DD-E9C6E1B27C7A}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E80F340-5525-471B-A415-2A8BA4CC5CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E80F340-5525-471B-A415-2A8BA4CC5CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E80F340-5525-471B-A415-2A8BA4CC5CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E80F340-5525-471B-A415-2A8BA4CC5CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
