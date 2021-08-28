@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using JWPaymentGateway.Application;
+using JWPaymentGateway.Infrastructure;
+using JWPaymentGateway.Web.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace JWPaymentGateway.Web
@@ -26,11 +23,27 @@ namespace JWPaymentGateway.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddApplication();
+            services.AddInfrastructure(Configuration);
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ApiExceptionFilter());
+                options.Filters.Add(new ApiKeyAuthFilter());
+                options.Filters.Add(new ProducesAttribute("application/json"));
+            }).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            }).ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "JWPaymentGateway.Web", Version = "v1"});
             });
+
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +55,8 @@ namespace JWPaymentGateway.Web
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JWPaymentGateway.Web v1"));
             }
+            
+            app.UseHealthChecks("/health");
 
             app.UseHttpsRedirection();
 

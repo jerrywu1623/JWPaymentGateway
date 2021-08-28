@@ -1,0 +1,60 @@
+version: "3.4"
+
+services:
+  jwpaymentgateway_backend:
+    build:
+      context: .
+      dockerfile: src/JWPaymentGateway.Web/Dockerfile
+    container_name: jwpaymentgateway_backend
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=Development"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Password=Your_password123"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx"
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - jwpaymentgateway
+    depends_on:
+      - elasticsearch
+      - kibana
+    restart: always
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+    restart: always
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    networks:
+      - jwpaymentgateway
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.6.2
+    restart: always
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=elasticsearch:9200
+    networks:
+      - jwpaymentgateway
+
+networks:
+  jwpaymentgateway:
+    driver: bridge
+
+volumes:
+  elasticsearch-data:
+  
