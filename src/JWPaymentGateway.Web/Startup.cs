@@ -31,7 +31,7 @@ namespace JWPaymentGateway.Web
             services.AddControllers(options =>
             {
                 options.Filters.Add(new ApiExceptionFilter());
-                options.Filters.Add(new ApiKeyAuthFilter());
+                options.Filters.Add(new ApiKeyMerchantIdAuthFilter());
                 options.Filters.Add(new ProducesAttribute("application/json"));
             }).AddJsonOptions(options =>
             {
