@@ -18,6 +18,7 @@ services:
     networks:
       - jwpaymentgateway
     depends_on:
+      - mssql
       - elasticsearch
       - kibana
     restart: always
@@ -51,10 +52,19 @@ services:
     networks:
       - jwpaymentgateway
 
+  mssql:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      - "SA_PASSWORD=Your_password123"
+      - "ACCEPT_EULA=Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - jwpaymentgateway
+        
 networks:
   jwpaymentgateway:
     driver: bridge
 
 volumes:
   elasticsearch-data:
-  

@@ -1,5 +1,6 @@
 using JWPaymentGateway.Application;
 using JWPaymentGateway.Infrastructure;
+using JWPaymentGateway.Infrastructure.Data;
 using JWPaymentGateway.Web.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,8 @@ namespace JWPaymentGateway.Web
         {
             services.AddApplication();
             services.AddInfrastructure(Configuration);
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddHttpContextAccessor();
             services.AddControllers(options =>
             {
                 options.Filters.Add(new ApiExceptionFilter());
@@ -43,7 +46,9 @@ namespace JWPaymentGateway.Web
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "JWPaymentGateway.Web", Version = "v1"});
             });
 
-            services.AddHealthChecks();
+            services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

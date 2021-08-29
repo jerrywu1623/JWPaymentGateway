@@ -1,8 +1,13 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
+using JWPaymentGateway.Application.Interfaces;
+using JWPaymentGateway.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Sinks.Elasticsearch;
@@ -11,10 +16,28 @@ namespace JWPaymentGateway.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             ConfigureSerilog();
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
+                    await ApplicationDbContextSeed.Initialize(applicationDbContext);
+                }
+                catch (Exception e)
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(e, "An error occurred while migrating or seeding the database.");
+                    throw;
+                }
+            }
+
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
