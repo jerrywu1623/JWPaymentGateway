@@ -2,7 +2,9 @@
 {
     public enum CardType
     {
-        CreditCard,
-        DebitCard
+        Visa,
+        Mastercard,
+        Amex,
+        Jcb
     }
 }

@@ -7,6 +7,6 @@ namespace JWPaymentGateway.Application.Models
         public int PaymentId { get; set; }
         public int TransactionId { get; set; }
         public string PaymentStatus { get; set; }
-        public DateTime CreateDateTime { get; set; }
+        public DateTime PaymentDateTime { get; set; }
     }
 }

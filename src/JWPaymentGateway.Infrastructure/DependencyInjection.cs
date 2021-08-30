@@ -26,6 +26,7 @@ namespace JWPaymentGateway.Infrastructure
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
             
             services.AddTransient<IDateTimeService, DateTimeService>();
+            services.AddTransient<IBankAcquireService, CkoBankAcquireService>();
             
             return services;
         }

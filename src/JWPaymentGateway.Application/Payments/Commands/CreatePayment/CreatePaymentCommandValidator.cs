@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentValidation;
 using JWPaymentGateway.Application.Interfaces;
+using JWPaymentGateway.Domain.Enums;
 using Microsoft.Extensions.Logging;
 
 namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
@@ -25,7 +26,9 @@ namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
             RuleFor(x => x.Cvv)
                 .MaximumLength(4)
                 .NotEmpty();
-            RuleFor(x => x.CardType).NotEmpty();
+            RuleFor(x => x.CardType)
+                .NotEmpty()
+                .Must(c => Enum.TryParse(c, true, out CardType cardType));
         }
 
         private bool IsValidExpiryDate(string expiryDate)
