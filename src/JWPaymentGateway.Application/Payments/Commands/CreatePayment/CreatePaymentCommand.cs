@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using JWPaymentGateway.Application.Common.Exceptions;
 using JWPaymentGateway.Application.Interfaces;
 using JWPaymentGateway.Application.Models;
 using JWPaymentGateway.Application.Payments.Events;
@@ -8,6 +9,7 @@ using JWPaymentGateway.Domain.Entities;
 using JWPaymentGateway.Domain.Enums;
 using Mapster;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
 {
@@ -36,21 +38,20 @@ namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
 
         public async Task<PaymentDto> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
+            await ValidateIsPaymentExist(request.MerchantId, request.OrderNumber, cancellationToken);
+            
             Enum.TryParse(request.CardType, true, out CardType cardType);
-
             var card = request.Adapt<Card>();
             card.CardType = cardType;
-
             var transaction = request.Adapt<Transaction>();
-
             var payment = new Payment
             {
+                MerchantId = request.MerchantId,
                 OrderNo = request.OrderNumber,
                 PaymentStatus = PaymentStatus.Processing,
                 Card = card,
                 Transaction = transaction
             };
-
             _applicationDbContext.Payments.Add(payment);
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
 
@@ -67,6 +68,14 @@ namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
             _publisher.Publish(new PaymentCreatedEvent(payment.Id, cardDto, transactionDto), cancellationToken);
 
             return paymentDto;
+        }
+
+        private async Task ValidateIsPaymentExist(int merchantId, string orderNumber, CancellationToken cancellationToken)
+        {
+            if (await _applicationDbContext.Payments.AnyAsync(w => w.MerchantId == merchantId && w.OrderNo == orderNumber, cancellationToken))
+            {
+                throw new ResourceExistException($"payment exist, order number: {orderNumber}");
+            }
         }
     }
 }

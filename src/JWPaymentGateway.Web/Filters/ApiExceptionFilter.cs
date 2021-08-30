@@ -17,7 +17,8 @@ namespace JWPaymentGateway.Web.Filters
             {
                 { typeof(ValidationException), HandleValidationException },
                 { typeof(NotFoundException), HandleNotFoundException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException }
+                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
+                { typeof(ResourceExistException), HandleResourceExistException }
             };
         }
 
@@ -78,6 +79,21 @@ namespace JWPaymentGateway.Web.Filters
             {
                 StatusCode = StatusCodes.Status401Unauthorized
             };
+
+            context.ExceptionHandled = true;
+        }
+
+        private void HandleResourceExistException(ExceptionContext context)
+        {
+            var exception = context.Exception as ResourceExistException;
+
+            var details = new ProblemDetails()
+            {
+                Title = "The specified resource has conflict.",
+                Detail = exception.Message
+            };
+
+            context.Result = new ConflictObjectResult(details);
 
             context.ExceptionHandled = true;
         }
