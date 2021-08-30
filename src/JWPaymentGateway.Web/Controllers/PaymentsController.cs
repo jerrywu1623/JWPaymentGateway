@@ -2,6 +2,7 @@
 using JWPaymentGateway.Application.Constants;
 using JWPaymentGateway.Application.Models;
 using JWPaymentGateway.Application.Payments.Commands.CreatePayment;
+using JWPaymentGateway.Application.Payments.Queries.GetPayment;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JWPaymentGateway.Web.Controllers
@@ -13,6 +14,13 @@ namespace JWPaymentGateway.Web.Controllers
         {
             request.MerchantId = merchantId;
             return await Mediator.Send(request);
+        }
+
+        [HttpGet("{paymentId:int}")]
+        public async Task<PaymentDetail> Get([FromHeader(Name = Constants.HttpHeaders.MERCHANT_ID_HEADER_NAME)] int merchantId, int paymentId)
+        {
+            var getPaymentQuery = new GetPaymentQuery {MerchantId = merchantId, PaymentId = paymentId};
+            return await Mediator.Send(getPaymentQuery);
         }
     }
 }

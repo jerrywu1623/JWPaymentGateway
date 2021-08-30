@@ -8,6 +8,7 @@ using JWPaymentGateway.Application.Payments.Events;
 using JWPaymentGateway.Domain.Entities;
 using JWPaymentGateway.Domain.Enums;
 using Mapster;
+using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,21 +30,21 @@ namespace JWPaymentGateway.Application.Payments.Commands.CreatePayment
     {
         private readonly IApplicationDbContext _applicationDbContext;
         private readonly IPublisher _publisher;
+        private readonly IMapper _mapper;
 
-        public CreatePaymentCommandHandler(IApplicationDbContext applicationDbContext, IPublisher publisher)
+        public CreatePaymentCommandHandler(IApplicationDbContext applicationDbContext, IPublisher publisher, IMapper mapper)
         {
             _applicationDbContext = applicationDbContext;
             _publisher = publisher;
+            _mapper = mapper;
         }
 
         public async Task<PaymentDto> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
             await ValidateIsPaymentExist(request.MerchantId, request.OrderNumber, cancellationToken);
-            
-            Enum.TryParse(request.CardType, true, out CardType cardType);
-            var card = request.Adapt<Card>();
-            card.CardType = cardType;
-            var transaction = request.Adapt<Transaction>();
+
+            var card = _mapper.Map<Card>(request);
+            var transaction = _mapper.Map<Transaction>(request);
             var payment = new Payment
             {
                 MerchantId = request.MerchantId,
