@@ -4,14 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using JWPaymentGateway.Application.Interfaces;
 using JWPaymentGateway.Application.Models;
-using JWPaymentGateway.Application.Payments.Events;
 using JWPaymentGateway.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace JWPaymentGateway.Application.BankAcquires.EventHandlers
+namespace JWPaymentGateway.Application.Payments.Events
 {
     public class PaymentCreatedEventHandler: INotificationHandler<PaymentCreatedEvent>
     {
