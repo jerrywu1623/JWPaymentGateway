@@ -1,3 +1,4 @@
+[![.NET Core Desktop](https://github.com/jerrywu1623/JWPaymentGateway/actions/workflows/dotnet-codecoverage.yml/badge.svg)](https://github.com/jerrywu1623/JWPaymentGateway/actions/workflows/dotnet-codecoverage.yml)
 # JWPaymentGateway
 This is a RESTful API application which contains 2 endpoints:
 1. /api/payments
